@@ -11,7 +11,7 @@ namespace ExpenseTracker.CLI.Handlers
         {
             if (command.Id <= 0)
             {
-                _logger.Information("Id must be greater than 0.");
+                _logger.Error("Id must be greater than 0.");
                 return 1;
             }
 
