@@ -33,7 +33,7 @@ namespace ExpenseTracker.CLI.Handlers
 
             await Task.CompletedTask;
 
-            _logger.Information($"📊 Summary | Year: {year} | Month: {month} | Category: {category}");
+            _logger.Information($"Summary | Year: {year} | Month: {month} | Category: {category}");
             _logger.Information($"Total expenses: {total:C}");
 
             return 0;

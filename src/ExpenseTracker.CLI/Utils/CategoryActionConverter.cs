@@ -25,6 +25,7 @@ namespace ExpenseTracker.CLI.Utils
     {
         list,
         add,
-        delete
+        delete,
+        none
     }
 }
