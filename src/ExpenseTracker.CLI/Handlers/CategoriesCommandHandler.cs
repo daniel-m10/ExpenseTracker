@@ -23,7 +23,7 @@ namespace ExpenseTracker.CLI.Handlers
 
                 default:
                     _logger.Error("Invalid ACTION. Use: list | add | delete");
-                    return 2;
+                    return 1;
             }
         }
 
@@ -31,10 +31,7 @@ namespace ExpenseTracker.CLI.Handlers
         {
             // Simulation
             await Task.CompletedTask;
-            _logger.Information("📂 Categories");
-            _logger.Information("- 1  Food");
-            _logger.Information("- 2  Transport");
-            _logger.Information("- 3  Utilities");
+            _logger.Information("Categories");
             return 0;
         }
 
@@ -48,7 +45,7 @@ namespace ExpenseTracker.CLI.Handlers
 
             // Simulation
             await Task.CompletedTask;
-            _logger.Information($"✅ Category added: {cmd.Name.Trim()} (id: 7)");
+            _logger.Information($"Category added: {cmd.Name.Trim()} (id: 7)");
             return 0;
         }
 
@@ -70,9 +67,9 @@ namespace ExpenseTracker.CLI.Handlers
             // Simulation
             await Task.CompletedTask;
             if (hasId)
-                _logger.Information($"🗑️  Category deleted (id: {cmd.Id})");
+                _logger.Information($"Category deleted (id: {cmd.Id})");
             else
-                _logger.Information($"🗑️  Category deleted (name: {cmd.Name!.Trim()})");
+                _logger.Information($"Category deleted (name: {cmd.Name!.Trim()})");
 
             return 0;
         }

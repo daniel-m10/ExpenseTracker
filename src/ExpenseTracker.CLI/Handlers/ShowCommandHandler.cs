@@ -18,7 +18,7 @@ namespace ExpenseTracker.CLI.Handlers
             await Task.CompletedTask;
 
             await Task.CompletedTask;
-            _logger.Information($"📌 Showing details for expense #{command.Id}");
+            _logger.Information($"Showing details for expense #{command.Id}");
             _logger.Information("Description: Lunch");
             _logger.Information("Amount     : $20.00");
             _logger.Information("Category   : Food");
