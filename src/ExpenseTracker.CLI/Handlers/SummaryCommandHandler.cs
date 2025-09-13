@@ -22,7 +22,7 @@ namespace ExpenseTracker.CLI.Handlers
 
             if (year < 2025)
             {
-                _logger.Error("Year must be greater or equal than 2025");
+                _logger.Error("Year must be greater or equal than 2025.");
                 return 1;
             }
 
