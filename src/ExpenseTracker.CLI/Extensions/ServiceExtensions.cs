@@ -1,5 +1,6 @@
 ﻿using ExpenseTracker.CLI.Abstractions;
 using ExpenseTracker.CLI.Handlers;
+using ExpenseTracker.CLI.InputOutput;
 using ExpenseTracker.CLI.Output;
 using ExpenseTracker.CLI.Parsers;
 using Microsoft.Extensions.Configuration;
@@ -23,6 +24,7 @@ namespace ExpenseTracker.CLI.Extensions
             services.AddSingleton(configuration);
             services.AddSingleton(Log.Logger);
             services.AddSingleton<IConsoleOutput, SerilogConsoleOutput>();
+            services.AddSingleton<IConsoleInput, ConsoleInput>();
             services.AddSingleton<IDateParser, DateParser>();
 
             services.AddTransient<AddCommandHandler>();
