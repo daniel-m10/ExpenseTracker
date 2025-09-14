@@ -1,30 +1,27 @@
 ﻿using ExpenseTracker.CLI.Abstractions;
 using ExpenseTracker.CLI.Commands;
+using ExpenseTracker.CLI.Constants;
 using Serilog;
-using System.Globalization;
 
 namespace ExpenseTracker.CLI.Handlers
 {
     public class AddCommandHandler(ILogger logger, IDateParser dateParser)
     {
-        private readonly ILogger _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
-        private readonly IDateParser _dateParser = dateParser ?? throw new ArgumentNullException(nameof(dateParser), "Date parser cannot be null.");
+        private readonly ILogger _logger = logger ?? throw new ArgumentNullException(nameof(logger), Messages.LoggerCannotBeNull);
+        private readonly IDateParser _dateParser = dateParser ?? throw new ArgumentNullException(nameof(dateParser), Messages.DateParserCannotBeNull);
 
         public async Task<int> RunAddAsync(AddCommand command)
         {
             if (command.Amount < 0)
             {
-                _logger.Error("Amount must be greater or equal to 0.");
+                _logger.Error(Messages.AmountMustBeNonNegative);
                 return 1;
             }
 
-            string format = "yyyy-MM-dd";
-            CultureInfo provider = CultureInfo.InvariantCulture;
-
-            if (!_dateParser.TryParseExact(command.Date, format, provider, DateTimeStyles.None, out DateTime parsedDate))
+            if (!_dateParser.TryParseExact(command.Date, DateFormats.StandardDateFormat, DateFormats.DefaultCultureInfo, DateFormats.DefaultDateTimeStyles, out DateTime parsedDate))
             {
-                _logger.Error($"Wrong data format for Expense date: {command.Date}");
-                _logger.Error("Please use this format: yyyy-MM-dd (e.g., 2024-01-15)");
+                _logger.Error(Messages.WrongDateFormat, command.Date);
+                _logger.Error(Messages.DateFormatHint);
                 return 1;
             }
 
@@ -37,11 +34,11 @@ namespace ExpenseTracker.CLI.Handlers
                 Date = parsedDate
             };
 
-            _logger.Information("Expense recorded successfully!");
-            _logger.Information($"Description: {expense.Description}");
-            _logger.Information($"Amount     : {expense.Amount:C}");   // currency format
-            _logger.Information($"Category   : {expense.Category}");
-            _logger.Information($"Date       : {expense.Date:yyyy-MM-dd}");
+            _logger.Information(Messages.ExpenseRecordedSuccessfully);
+            _logger.Information(Messages.DescriptionLabel, expense.Description);
+            _logger.Information(Messages.AmountLabel, expense.Amount);
+            _logger.Information(Messages.CategoryLabel, expense.Category);
+            _logger.Information(Messages.DateLabel, expense.Date);
 
             await Task.CompletedTask;
 

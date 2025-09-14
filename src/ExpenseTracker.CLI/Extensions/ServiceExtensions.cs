@@ -1,7 +1,6 @@
 ﻿using ExpenseTracker.CLI.Abstractions;
 using ExpenseTracker.CLI.Handlers;
 using ExpenseTracker.CLI.InputOutput;
-using ExpenseTracker.CLI.Output;
 using ExpenseTracker.CLI.Parsers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

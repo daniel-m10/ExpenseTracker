@@ -1,4 +1,5 @@
 ﻿using ExpenseTracker.CLI.Commands;
+using ExpenseTracker.CLI.Constants;
 using ExpenseTracker.CLI.Utils;
 using Serilog;
 
@@ -6,7 +7,7 @@ namespace ExpenseTracker.CLI.Handlers
 {
     public class CategoriesCommandHandler(ILogger logger)
     {
-        private readonly ILogger _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
+        private readonly ILogger _logger = logger ?? throw new ArgumentNullException(nameof(logger), Messages.LoggerCannotBeNull);
 
         public async Task<int> RunCategoriesAsync(CategoriesCommand command)
         {
@@ -22,7 +23,7 @@ namespace ExpenseTracker.CLI.Handlers
                     return await HandleDeleteAsync(command);
 
                 default:
-                    _logger.Error("Invalid ACTION. Use: list | add | delete");
+                    _logger.Error(Messages.InvalidAction);
                     return 1;
             }
         }
@@ -31,7 +32,7 @@ namespace ExpenseTracker.CLI.Handlers
         {
             // Simulation
             await Task.CompletedTask;
-            _logger.Information("Categories");
+            _logger.Information(Messages.Categories);
             return 0;
         }
 
@@ -39,13 +40,13 @@ namespace ExpenseTracker.CLI.Handlers
         {
             if (string.IsNullOrWhiteSpace(cmd.Name))
             {
-                _logger.Error("Missing --name for 'add'. Example: categories add --name Food");
+                _logger.Error(Messages.MissingNameForAdd);
                 return 1;
             }
 
             // Simulation
             await Task.CompletedTask;
-            _logger.Information($"Category added: {cmd.Name.Trim()} (id: 7)");
+            _logger.Information(Messages.CategoryAdded, cmd.Name.Trim());
             return 0;
         }
 
@@ -57,19 +58,19 @@ namespace ExpenseTracker.CLI.Handlers
 
             if (hasId == hasName)
             {
-                _logger.Error("For 'delete', provide exactly one: --id ID  OR  --name NAME");
-                _logger.Information("Examples:");
-                _logger.Information("  categories delete --id 3");
-                _logger.Information("  categories delete --name Food");
+                _logger.Error(Messages.DeleteRequiresIdOrName);
+                _logger.Information(Messages.ExamplesHeader);
+                _logger.Information(Messages.ExampleDeleteById);
+                _logger.Information(Messages.ExampleDeleteByName);
                 return 1;
             }
 
             // Simulation
             await Task.CompletedTask;
             if (hasId)
-                _logger.Information($"Category deleted (id: {cmd.Id})");
+                _logger.Information(Messages.CategoryDeletedById, cmd.Id);
             else
-                _logger.Information($"Category deleted (name: {cmd.Name!.Trim()})");
+                _logger.Information(Messages.CategoryDeletedByName, cmd.Name!.Trim());
 
             return 0;
         }
