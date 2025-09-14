@@ -1,7 +1,7 @@
 ﻿using ExpenseTracker.CLI.Abstractions;
 using Serilog;
 
-namespace ExpenseTracker.CLI.Output
+namespace ExpenseTracker.CLI.InputOutput
 {
     public class SerilogConsoleOutput(ILogger logger) : IConsoleOutput
     {

@@ -1,4 +1,5 @@
 ﻿using ExpenseTracker.CLI.Commands;
+using ExpenseTracker.CLI.Constants;
 using ExpenseTracker.CLI.Handlers;
 using NSubstitute;
 using Serilog;
@@ -34,7 +35,8 @@ namespace ExpenseTracker.CLI.Tests.Handlers
             var result = await handler.RunSummaryAsync(_command);
 
             // Assert
-            _logger.Received(2).Information(Arg.Any<string>());
+            _logger.Received(1).Information(Messages.SummaryHeader, Arg.Any<int>(), Arg.Any<int>(), "(any)");
+            _logger.Received(1).Information(Messages.TotalExpenses, Arg.Any<decimal>());
             Assert.That(result, Is.Zero);
         }
 
@@ -48,7 +50,8 @@ namespace ExpenseTracker.CLI.Tests.Handlers
             var result = await handler.RunSummaryAsync(_command);
 
             // Assert
-            _logger.Received(2).Information(Arg.Any<string>());
+            _logger.Received(1).Information(Messages.SummaryHeader, 2025, 1, "Food");
+            _logger.Received(1).Information(Messages.TotalExpenses, Arg.Any<decimal>());
             Assert.That(result, Is.Zero);
         }
 
@@ -63,18 +66,9 @@ namespace ExpenseTracker.CLI.Tests.Handlers
             var result = await handler.RunSummaryAsync(_command);
 
             // Assert
-            _logger.Received(2).Information(Arg.Any<string>());
-
-            var calls = _logger.ReceivedCalls()
-                .Where(call => call.GetMethodInfo().Name == "Information")
-                .Select(call => call.GetArguments()[0] as string)
-                .ToList();
-
-            using (Assert.EnterMultipleScope())
-            {
-                Assert.That(result, Is.Zero);
-                Assert.That(calls[0], Does.Contain("Category: (any)"));
-            }
+            _logger.Received(1).Information(Messages.SummaryHeader, Arg.Any<int>(), Arg.Any<int>(), "(any)");
+            _logger.Received(1).Information(Messages.TotalExpenses, Arg.Any<decimal>());
+            Assert.That(result, Is.Zero);
         }
 
         [Test]
@@ -88,7 +82,7 @@ namespace ExpenseTracker.CLI.Tests.Handlers
             var result = await handler.RunSummaryAsync(_command);
 
             // Assert
-            _logger.Received(1).Error("Month must be between 1 and 12.");
+            _logger.Received(1).Error(Messages.MonthMustBeBetween1And12);
             Assert.That(result, Is.EqualTo(1));
         }
 
@@ -103,7 +97,7 @@ namespace ExpenseTracker.CLI.Tests.Handlers
             var result = await handler.RunSummaryAsync(_command);
 
             // Assert
-            _logger.Received(1).Error("Month must be between 1 and 12.");
+            _logger.Received(1).Error(Messages.MonthMustBeBetween1And12);
             Assert.That(result, Is.EqualTo(1));
         }
 
@@ -126,12 +120,12 @@ namespace ExpenseTracker.CLI.Tests.Handlers
         public void RunSummaryAsync_NullLogger_ThrowsArgumentNullException()
         {
             // Act & Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => new ShowCommandHandler(null!));
+            var ex = Assert.Throws<ArgumentNullException>(() => new SummaryCommandHandler(null!));
 
             using (Assert.EnterMultipleScope())
             {
                 Assert.That(ex.ParamName, Is.EqualTo("logger"));
-                Assert.That(ex.Message, Does.Contain("Logger cannot be null"));
+                Assert.That(ex.Message, Does.Contain(Messages.LoggerCannotBeNull));
             }
         }
     }

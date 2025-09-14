@@ -1,4 +1,5 @@
 ﻿using ExpenseTracker.CLI.Commands;
+using ExpenseTracker.CLI.Constants;
 using ExpenseTracker.CLI.Handlers;
 using NSubstitute;
 using Serilog;
@@ -31,7 +32,11 @@ namespace ExpenseTracker.CLI.Tests.Handlers
             var result = await handler.RunShowAsync(_command);
 
             // Assert
-            _logger.Received(5).Information(Arg.Any<string>());
+            _logger.Received(1).Information(Messages.ShowingDetailsForExpense, 1);
+            _logger.Received(1).Information(Messages.DescriptionLabel, "Lunch");
+            _logger.Received(1).Information(Messages.AmountLabel, 20.00m);
+            _logger.Received(1).Information(Messages.CategoryLabel, "Food");
+            _logger.Received(1).Information(Messages.DateLabel, Arg.Any<DateTime>());
             Assert.That(result, Is.Zero);
         }
 
@@ -47,7 +52,7 @@ namespace ExpenseTracker.CLI.Tests.Handlers
             var result = await handler.RunShowAsync(_command);
 
             // Assert
-            _logger.Received(1).Error("Id must be greater than 0.");
+            _logger.Received(1).Error(Messages.IdMustBeGreaterThanZero);
             Assert.That(result, Is.EqualTo(1));
         }
 
@@ -60,7 +65,7 @@ namespace ExpenseTracker.CLI.Tests.Handlers
             using (Assert.EnterMultipleScope())
             {
                 Assert.That(ex.ParamName, Is.EqualTo("logger"));
-                Assert.That(ex.Message, Does.Contain("Logger cannot be null"));
+                Assert.That(ex.Message, Does.Contain(Messages.LoggerCannotBeNull));
             }
         }
 
@@ -74,21 +79,14 @@ namespace ExpenseTracker.CLI.Tests.Handlers
             var result = await handler.RunShowAsync(_command);
 
             // Assert
-            _logger.Received(5).Information(Arg.Any<string>());
-
-            var calls = _logger.ReceivedCalls()
-                .Where(call => call.GetMethodInfo().Name == "Information")
-                .Select(call => call.GetArguments()[0] as string)
-                .ToList();
-
             using (Assert.EnterMultipleScope())
             {
                 Assert.That(result, Is.Zero);
-                Assert.That(calls[0], Does.Contain("Showing details for expense"));
-                Assert.That(calls[1], Does.Contain("Description"));
-                Assert.That(calls[2], Does.Contain("Amount"));
-                Assert.That(calls[3], Does.Contain("Category"));
-                Assert.That(calls[4], Does.Contain("Date"));
+                _logger.Received(1).Information(Messages.ShowingDetailsForExpense, 1);
+                _logger.Received(1).Information(Messages.DescriptionLabel, "Lunch");
+                _logger.Received(1).Information(Messages.AmountLabel, 20.00m);
+                _logger.Received(1).Information(Messages.CategoryLabel, "Food");
+                _logger.Received(1).Information(Messages.DateLabel, Arg.Any<DateTime>());
             }
         }
     }

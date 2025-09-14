@@ -1,11 +1,12 @@
 ﻿using ExpenseTracker.CLI.Commands;
+using ExpenseTracker.CLI.Constants;
 using Serilog;
 
 namespace ExpenseTracker.CLI.Handlers
 {
     public class SummaryCommandHandler(ILogger logger)
     {
-        private readonly ILogger _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
+        private readonly ILogger _logger = logger ?? throw new ArgumentNullException(nameof(logger), Messages.LoggerCannotBeNull);
 
         public async Task<int> RunSummaryAsync(SummaryCommand command)
         {
@@ -16,7 +17,7 @@ namespace ExpenseTracker.CLI.Handlers
 
             if (command.Month < 1 || command.Month > 12)
             {
-                _logger.Error("Month must be between 1 and 12.");
+                _logger.Error(Messages.MonthMustBeBetween1And12);
                 return 1;
             }
 
@@ -33,8 +34,8 @@ namespace ExpenseTracker.CLI.Handlers
 
             await Task.CompletedTask;
 
-            _logger.Information($"Summary | Year: {year} | Month: {month} | Category: {category}");
-            _logger.Information($"Total expenses: {total:C}");
+            _logger.Information(Messages.SummaryHeader, year, month, category);
+            _logger.Information(Messages.TotalExpenses, total);
 
             return 0;
         }

@@ -1,6 +1,7 @@
 ﻿using CommandLine;
 using ExpenseTracker.CLI.Abstractions;
 using ExpenseTracker.CLI.Commands;
+using ExpenseTracker.CLI.Constants;
 using ExpenseTracker.CLI.Extensions;
 using ExpenseTracker.CLI.Handlers;
 using Microsoft.Extensions.Configuration;
@@ -63,17 +64,17 @@ try
                 return Task.FromResult(0);
             }
 
-            Log.Error("Failed to parse command: {@Errors}", errs);
+            Log.Error(Messages.FailedToParseCommand, errs);
             var output = serviceProvider.GetRequiredService<IConsoleOutput>();
-            output.WriteError("Invalid command. Use --help for usage.");
+            output.WriteError(Messages.InvalidCommand);
             return Task.FromResult(1);
         });
 }
 catch (Exception ex)
 {
-    Log.Error(ex, "Unhandled exception ocurred.");
+    Log.Error(ex, Messages.UnhandledException);
     var output = serviceProvider.GetRequiredService<IConsoleOutput>();
-    output.WriteError("Invalid command. Use --help for usage.");
+    output.WriteError(Messages.InvalidCommand);
 }
 finally
 {

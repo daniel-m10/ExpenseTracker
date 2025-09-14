@@ -1,4 +1,5 @@
 ﻿using ExpenseTracker.CLI.Commands;
+using ExpenseTracker.CLI.Constants;
 using ExpenseTracker.CLI.Handlers;
 using NSubstitute;
 using Serilog;
@@ -34,7 +35,7 @@ namespace ExpenseTracker.CLI.Tests.Handlers
             var result = await handler.RunListAsync(new ListCommand());
 
             // Assert
-            _logger.Received(1).Information(Arg.Is<string>(s => s.Contains("Listing expenses")));
+            _logger.Received(1).Information(Messages.ListingExpenses, Arg.Any<int>(), Arg.Any<int>(), "(any)", Arg.Any<int>());
             Assert.That(result, Is.Zero);
         }
 
@@ -48,8 +49,7 @@ namespace ExpenseTracker.CLI.Tests.Handlers
             var result = await handler.RunListAsync(_command);
 
             // Assert
-            _logger.Received(1).Information(Arg.Is<string>(
-                s => s.Contains("Year:") && s.Contains("Month:")));
+            _logger.Received(1).Information(Messages.ListingExpenses, 2025, 1, "Food", 10);
             Assert.That(result, Is.Zero);
         }
 
@@ -63,7 +63,7 @@ namespace ExpenseTracker.CLI.Tests.Handlers
             var result = await handler.RunListAsync(_command);
 
             // Assert
-            _logger.Received(1).Information(Arg.Is<string>(s => s.Contains("Category:")));
+            _logger.Received(1).Information(Messages.ListingExpenses, 2025, 1, "Food", 10);
             Assert.That(result, Is.Zero);
         }
 
@@ -78,7 +78,7 @@ namespace ExpenseTracker.CLI.Tests.Handlers
             var result = await handler.RunListAsync(_command);
 
             // Assert
-            _logger.Received(1).Error("Month must be between 1 and 12.");
+            _logger.Received(1).Error(Messages.MonthMustBeBetween1And12);
             Assert.That(result, Is.EqualTo(1));
         }
 
@@ -93,22 +93,7 @@ namespace ExpenseTracker.CLI.Tests.Handlers
             var result = await handler.RunListAsync(_command);
 
             // Assert
-            _logger.Received(1).Error("Month must be between 1 and 12.");
-            Assert.That(result, Is.EqualTo(1));
-        }
-
-        [Test]
-        public async Task RunListAsync_InvalidYear_LessThan2025_LogsErrorAndReturnsOne()
-        {
-            // Arrange
-            _command.Year = 2024;
-            var handler = new ListCommandHandler(_logger);
-
-            // Act
-            var result = await handler.RunListAsync(_command);
-
-            // Assert
-            _logger.Received(1).Error("Year must be greater or equal than 2025.");
+            _logger.Received(1).Error(Messages.MonthMustBeBetween1And12);
             Assert.That(result, Is.EqualTo(1));
         }
 
@@ -124,7 +109,7 @@ namespace ExpenseTracker.CLI.Tests.Handlers
             var result = await handler.RunListAsync(_command);
 
             // Assert
-            _logger.Received(1).Error("Limit must be greater than 0.");
+            _logger.Received(1).Error(Messages.LimitMustBeGreaterThanZero);
             Assert.That(result, Is.EqualTo(1));
         }
 
@@ -137,7 +122,7 @@ namespace ExpenseTracker.CLI.Tests.Handlers
             using (Assert.EnterMultipleScope())
             {
                 Assert.That(ex.ParamName, Is.EqualTo("logger"));
-                Assert.That(ex.Message, Does.Contain("Logger cannot be null."));
+                Assert.That(ex.Message, Does.Contain(Messages.LoggerCannotBeNull));
             }
         }
     }

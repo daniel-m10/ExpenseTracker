@@ -1,5 +1,6 @@
 ﻿using ExpenseTracker.CLI.Abstractions;
 using ExpenseTracker.CLI.Commands;
+using ExpenseTracker.CLI.Constants;
 using ExpenseTracker.CLI.Handlers;
 using NSubstitute;
 using Serilog;
@@ -36,18 +37,11 @@ namespace ExpenseTracker.CLI.Tests.Handlers
             var result = await handler.RunDeleteAsync(_command);
 
             // Assert
-            _logger.Received(2).Information(Arg.Any<string>());
-
-            var calls = _logger.ReceivedCalls()
-                .Where(call => call.GetMethodInfo().Name == "Information")
-                .Select(call => call.GetArguments()[0] as string)
-                .ToList();
-
             using (Assert.EnterMultipleScope())
             {
                 Assert.That(result, Is.Zero);
-                Assert.That(calls[0], Does.Contain("Are you sure you want to delete"));
-                Assert.That(calls[1], Does.Contain("deleted successfully"));
+                _logger.Received(1).Information(Messages.ConfirmDeletePrompt, 1);
+                _logger.Received(1).Information(Messages.ExpenseDeletedSuccessfully, 1);
             }
         }
 
@@ -63,7 +57,7 @@ namespace ExpenseTracker.CLI.Tests.Handlers
 
             // Assert
             Assert.That(result, Is.Zero);
-            _logger.Received(1).Information(Arg.Is<string>(s => s.Contains("deleted successfully")));
+            _logger.Received(1).Information(Messages.ExpenseDeletedSuccessfully, 1);
         }
 
         [Test]
@@ -78,7 +72,7 @@ namespace ExpenseTracker.CLI.Tests.Handlers
 
             // Assert
             Assert.That(result, Is.EqualTo(1));
-            _logger.Received(1).Error(Arg.Is<string>(s => s.Contains("Id must be greater than 0.")));
+            _logger.Received(1).Error(Messages.IdMustBeGreaterThanZero);
         }
 
         [Test]
@@ -118,18 +112,11 @@ namespace ExpenseTracker.CLI.Tests.Handlers
             var result = await handler.RunDeleteAsync(_command);
 
             // Assert
-            _logger.Received(2).Information(Arg.Any<string>());
-
-            var calls = _logger.ReceivedCalls()
-                .Where(call => call.GetMethodInfo().Name == "Information")
-                .Select(call => call.GetArguments()[0] as string)
-                .ToList();
-
             using (Assert.EnterMultipleScope())
             {
                 Assert.That(result, Is.EqualTo(1));
-                Assert.That(calls[0], Does.Contain("Are you sure you want to delete"));
-                Assert.That(calls[1], Does.Contain("Delete cancelled."));
+                _logger.Received(1).Information(Messages.ConfirmDeletePrompt, 1);
+                _logger.Received(1).Information(Messages.DeleteCancelled);
             }
         }
     }

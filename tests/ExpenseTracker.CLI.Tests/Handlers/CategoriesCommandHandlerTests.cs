@@ -1,4 +1,5 @@
 ﻿using ExpenseTracker.CLI.Commands;
+using ExpenseTracker.CLI.Constants;
 using ExpenseTracker.CLI.Handlers;
 using ExpenseTracker.CLI.Utils;
 using NSubstitute;
@@ -49,7 +50,7 @@ namespace ExpenseTracker.CLI.Tests.Handlers
             var result = await handler.RunCategoriesAsync(_command);
 
             // Assert
-            _logger.Received(1).Information(Arg.Is<string>(s => s.Contains("Category added")));
+            _logger.Received(1).Information(Messages.CategoryAdded, "Food");
             Assert.That(result, Is.Zero);
         }
 
@@ -65,7 +66,7 @@ namespace ExpenseTracker.CLI.Tests.Handlers
             var result = await handler.RunCategoriesAsync(_command);
 
             // Assert
-            _logger.Received(1).Information(Arg.Is<string>(s => s.Contains("Category deleted (id")));
+            _logger.Received(1).Information(Messages.CategoryDeletedById, 1);
             Assert.That(result, Is.Zero);
         }
 
@@ -81,7 +82,7 @@ namespace ExpenseTracker.CLI.Tests.Handlers
             var result = await handler.RunCategoriesAsync(_command);
 
             // Assert
-            _logger.Received(1).Information(Arg.Is<string>(s => s.Contains("Category deleted (name")));
+            _logger.Received(1).Information(Messages.CategoryDeletedByName, "Food");
             Assert.That(result, Is.Zero);
         }
 

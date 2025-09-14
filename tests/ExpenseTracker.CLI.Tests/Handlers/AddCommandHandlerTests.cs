@@ -1,5 +1,6 @@
 ﻿using ExpenseTracker.CLI.Abstractions;
 using ExpenseTracker.CLI.Commands;
+using ExpenseTracker.CLI.Constants;
 using ExpenseTracker.CLI.Handlers;
 using NSubstitute;
 using Serilog;
@@ -51,7 +52,11 @@ namespace ExpenseTracker.CLI.Tests.Handlers
             var result = await handler.RunAddAsync(_command);
 
             // Assert
-            _logger.Received(5).Information(Arg.Any<string>());
+            _logger.Received(1).Information(Messages.ExpenseRecordedSuccessfully);
+            _logger.Received(1).Information(Messages.DescriptionLabel, "Test");
+            _logger.Received(1).Information(Messages.AmountLabel, 10m);
+            _logger.Received(1).Information(Messages.CategoryLabel, "Food");
+            _logger.Received(1).Information(Messages.DateLabel, Arg.Any<DateTime>());
             Assert.That(result, Is.Zero);
         }
 
@@ -68,20 +73,28 @@ namespace ExpenseTracker.CLI.Tests.Handlers
 
             // Assert
             Assert.That(result, Is.EqualTo(1));
-            _logger.Received(1).Error(Arg.Is<string>(s => s.Contains("Amount must be greater or equal to 0.")));
+            _logger.Received(1).Error(Messages.AmountMustBeNonNegative);
         }
 
         [Test]
         public async Task RunAddAsync_InvalidDateFormat_LogsErrorAndReturnsOne()
         {
             // Arrange
+            _dateParser.TryParseExact(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<IFormatProvider>(),
+                Arg.Any<DateTimeStyles>(),
+                out Arg.Any<DateTime>()).Returns(false);
+
             var handler = new AddCommandHandler(_logger, _dateParser);
 
             // Act
             var result = await handler.RunAddAsync(new AddCommand());
 
             // Assert
-            _logger.Received(2).Error(Arg.Any<string>());
+            _logger.Received(1).Error(Messages.WrongDateFormat, Arg.Any<string>());
+            _logger.Received(1).Error(Messages.DateFormatHint);
             Assert.That(result, Is.EqualTo(1));
         }
 
@@ -93,7 +106,7 @@ namespace ExpenseTracker.CLI.Tests.Handlers
             using (Assert.EnterMultipleScope())
             {
                 Assert.That(ex.ParamName, Is.EqualTo("logger"));
-                Assert.That(ex.Message, Does.Contain("Logger cannot be null."));
+                Assert.That(ex.Message, Does.Contain(Messages.LoggerCannotBeNull));
             }
         }
 
@@ -105,7 +118,7 @@ namespace ExpenseTracker.CLI.Tests.Handlers
             using (Assert.EnterMultipleScope())
             {
                 Assert.That(ex.ParamName, Is.EqualTo("dateParser"));
-                Assert.That(ex.Message, Does.Contain("Date parser cannot be null."));
+                Assert.That(ex.Message, Does.Contain(Messages.DateParserCannotBeNull));
             }
         }
 
@@ -132,21 +145,15 @@ namespace ExpenseTracker.CLI.Tests.Handlers
             var result = await handler.RunAddAsync(_command);
 
             // Assert
-            _logger.Received(5).Information(Arg.Any<string>());
-
-            var calls = _logger.ReceivedCalls()
-                .Where(call => call.GetMethodInfo().Name == "Information")
-                .Select(call => call.GetArguments()[0] as string)
-                .ToList();
 
             using (Assert.EnterMultipleScope())
             {
                 Assert.That(result, Is.Zero);
-                Assert.That(calls[0], Does.Contain("Expense recorded"));
-                Assert.That(calls[1], Does.Contain("Description"));
-                Assert.That(calls[2], Does.Contain("Amount"));
-                Assert.That(calls[3], Does.Contain("Category"));
-                Assert.That(calls[4], Does.Contain("Date"));
+                _logger.Received(1).Information(Messages.ExpenseRecordedSuccessfully);
+                _logger.Received(1).Information(Messages.DescriptionLabel, "Test");
+                _logger.Received(1).Information(Messages.AmountLabel, 10m);
+                _logger.Received(1).Information(Messages.CategoryLabel, "Food");
+                _logger.Received(1).Information(Messages.DateLabel, parsedDate);
             }
         }
 
@@ -154,24 +161,24 @@ namespace ExpenseTracker.CLI.Tests.Handlers
         public async Task RunAddAsync_InvalidDateFormat_LogsDateFormatHint()
         {
             // Arrange
+            _dateParser.TryParseExact(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<IFormatProvider>(),
+                Arg.Any<DateTimeStyles>(),
+                out Arg.Any<DateTime>()).Returns(false);
+
             var handler = new AddCommandHandler(_logger, _dateParser);
 
             // Act
             var result = await handler.RunAddAsync(new AddCommand());
 
             // Assert
-            _logger.Received(2).Error(Arg.Any<string>());
-
-            var calls = _logger.ReceivedCalls()
-                .Where(call => call.GetMethodInfo().Name == "Error")
-                .Select(call => call.GetArguments()[0] as string)
-                .ToList();
-
             using (Assert.EnterMultipleScope())
             {
                 Assert.That(result, Is.EqualTo(1));
-                Assert.That(calls[0], Does.Contain("Wrong data format for Expense date:"));
-                Assert.That(calls[1], Does.Contain("Please use this format:"));
+                _logger.Received(1).Error(Messages.WrongDateFormat, Arg.Any<string>());
+                _logger.Received(1).Error(Messages.DateFormatHint);
             }
         }
     }
