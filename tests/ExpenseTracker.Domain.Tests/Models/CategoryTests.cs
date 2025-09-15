@@ -1,19 +1,10 @@
 ﻿using ExpenseTracker.Domain.Models;
-using System.Xml.Linq;
 
 namespace ExpenseTracker.Domain.Tests.Models
 {
     [TestFixture]
     public class CategoryTests
     {
-        private Category _category;
-
-        [SetUp]
-        public void SetUp()
-        {
-            _category = new Category();
-        }
-
         [Test]
         public void Category_Should_SetAndGet_Id()
         {
@@ -34,11 +25,14 @@ namespace ExpenseTracker.Domain.Tests.Models
         {
             // Arrange
             var name = "Category Test";
-            _category.Name = name;
+            var category = new Category
+            {
+                Name = name
+            };
 
             // Assert
-            Assert.That(_category.Name, Is.Not.Null);
-            Assert.That(_category.Name, Is.EqualTo(name));
+            Assert.That(category.Name, Is.Not.Null);
+            Assert.That(category.Name, Is.EqualTo(name));
         }
 
         [Test]
@@ -46,11 +40,14 @@ namespace ExpenseTracker.Domain.Tests.Models
         {
             // Arrange
             var description = "Description Test";
-            _category.Description = description;
+            var category = new Category
+            {
+                Description = description
+            };
 
             // Assert
-            Assert.That(_category.Description, Is.Not.Null);
-            Assert.That(_category.Description, Is.EqualTo(description));
+            Assert.That(category.Description, Is.Not.Null);
+            Assert.That(category.Description, Is.EqualTo(description));
         }
 
         [Test]
@@ -71,13 +68,43 @@ namespace ExpenseTracker.Domain.Tests.Models
         [Test]
         public void Category_Should_Have_NullOrDefault_Values_When_NotSet()
         {
+            // Arrange
+            var category = new Category();
+
             // Assert
             using (Assert.EnterMultipleScope())
             {
-                Assert.That(_category.Id, Is.Default);
-                Assert.That(_category.Name, Is.EqualTo(string.Empty));
-                Assert.That(_category.Description, Is.EqualTo(string.Empty));
-                Assert.That(_category.CreatedAt, Is.Default);
+                Assert.That(category.Id, Is.Default);
+                Assert.That(category.Name, Is.EqualTo(string.Empty));
+                Assert.That(category.Description, Is.EqualTo(string.Empty));
+                Assert.That(category.CreatedAt, Is.Default);
+            }
+        }
+
+        [Test]
+        public void Category_Equality_Should_Be_Based_On_Values()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            var category1 = new Category { Id = id, Name = "N", Description = "D", CreatedAt = DateTime.Today };
+            var category2 = new Category { Id = id, Name = "N", Description = "D", CreatedAt = DateTime.Today };
+
+            //Assert
+            Assert.That(category1, Is.EqualTo(category2));
+        }
+
+        [Test]
+        public void Category_Should_Return_New_Instance_When_Using_With_Expression()
+        {
+            // Arrange
+            var category = new Category { Name = "Old" };
+            var updated = category with { Name = "New" };
+
+            // Assert
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(updated.Name, Is.EqualTo("New"));
+                Assert.That(category.Name, Is.EqualTo("Old"));
             }
         }
     }

@@ -5,14 +5,6 @@ namespace ExpenseTracker.Domain.Tests.Models
     [TestFixture]
     public class ExpenseTests
     {
-        private Expense _expense;
-
-        [SetUp]
-        public void SetUp()
-        {
-            _expense = new Expense();
-        }
-
         [Test]
         public void Expense_Should_SetAndGet_Id()
         {
@@ -47,11 +39,14 @@ namespace ExpenseTracker.Domain.Tests.Models
         {
             // Arrange
             var amount = 2m;
-            _expense.Amount = amount;
+            var expense = new Expense
+            {
+                Amount = amount
+            };
 
             // Assert
-            Assert.That(_expense.Amount, Is.Not.Default);
-            Assert.That(_expense.Amount, Is.EqualTo(amount));
+            Assert.That(expense.Amount, Is.Not.Default);
+            Assert.That(expense.Amount, Is.EqualTo(amount));
         }
 
         [Test]
@@ -59,11 +54,14 @@ namespace ExpenseTracker.Domain.Tests.Models
         {
             // Arrange
             var date = new DateTime(2025, 1, 1);
-            _expense.Date = date;
+            var expense = new Expense
+            {
+                Date = date
+            };
 
             // Assert
-            Assert.That(_expense.Date, Is.Not.Default);
-            Assert.That(_expense.Date, Is.EqualTo(date));
+            Assert.That(expense.Date, Is.Not.Default);
+            Assert.That(expense.Date, Is.EqualTo(date));
         }
 
         [Test]
@@ -99,15 +97,47 @@ namespace ExpenseTracker.Domain.Tests.Models
         [Test]
         public void Expense_Should_Have_NullOrDefault_Values_When_NotSet()
         {
+            // Arrange
+            var expense = new Expense();
+
             // Assert
             using (Assert.EnterMultipleScope())
             {
-                Assert.That(_expense.Id, Is.Default);
-                Assert.That(_expense.Description, Is.EqualTo(string.Empty));
-                Assert.That(_expense.Amount, Is.Default);
-                Assert.That(_expense.Date, Is.Default);
-                Assert.That(_expense.CategoryId, Is.Default);
-                Assert.That(_expense.CreatedAt, Is.Default);
+                Assert.That(expense.Id, Is.Default);
+                Assert.That(expense.Description, Is.EqualTo(string.Empty));
+                Assert.That(expense.Amount, Is.Default);
+                Assert.That(expense.Date, Is.Default);
+                Assert.That(expense.CategoryId, Is.Default);
+                Assert.That(expense.CreatedAt, Is.Default);
+            }
+        }
+
+        [Test]
+        public void Expense_Equality_Should_Be_Based_On_Values()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            var expense1 = new Expense { Id = id, Description = "A", Amount = 1, Date = DateTime.Today, CategoryId = id, CreatedAt = DateTime.Today };
+            var expense2 = new Expense { Id = id, Description = "A", Amount = 1, Date = DateTime.Today, CategoryId = id, CreatedAt = DateTime.Today };
+
+            //Assert
+            Assert.That(expense1, Is.EqualTo(expense2));
+        }
+
+        [Test]
+        public void Expense_Should_Return_New_Instance_When_Using_With_Expression()
+        {
+            // Arrange
+            var expense = new Expense { Description = "Old" };
+
+            // Act
+            var updated = expense with { Description = "New" };
+
+            // Assert
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(updated.Description, Is.EqualTo("New"));
+                Assert.That(expense.Description, Is.EqualTo("Old"));
             }
         }
     }
