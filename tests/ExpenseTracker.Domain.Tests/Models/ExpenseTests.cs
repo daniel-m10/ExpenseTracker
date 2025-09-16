@@ -1,4 +1,5 @@
 ﻿using ExpenseTracker.Domain.Models;
+using ExpenseTracker.Domain.ValueObjects;
 
 namespace ExpenseTracker.Domain.Tests.Models
 {
@@ -38,15 +39,16 @@ namespace ExpenseTracker.Domain.Tests.Models
         public void Expense_Should_SetAndGet_Amount()
         {
             // Arrange
-            var amount = 2m;
+            var money = new Money(amount: 2);
             var expense = new Expense
             {
-                Amount = amount
+                Money = money
             };
 
             // Assert
-            Assert.That(expense.Amount, Is.Not.Default);
-            Assert.That(expense.Amount, Is.EqualTo(amount));
+            Assert.That(expense.Money, Is.Not.Default);
+            Assert.That(expense.Money.Amount, Is.EqualTo(2));
+            Assert.That(expense.Money.Currency, Is.EqualTo("USD"));
         }
 
         [Test]
@@ -105,7 +107,8 @@ namespace ExpenseTracker.Domain.Tests.Models
             {
                 Assert.That(expense.Id, Is.Default);
                 Assert.That(expense.Description, Is.EqualTo(string.Empty));
-                Assert.That(expense.Amount, Is.Default);
+                Assert.That(expense.Money.Amount, Is.Zero);
+                Assert.That(expense.Money.Currency, Is.EqualTo("USD"));
                 Assert.That(expense.Date, Is.Default);
                 Assert.That(expense.CategoryId, Is.Default);
                 Assert.That(expense.CreatedAt, Is.Default);
@@ -117,8 +120,9 @@ namespace ExpenseTracker.Domain.Tests.Models
         {
             // Arrange
             var id = Guid.NewGuid();
-            var expense1 = new Expense { Id = id, Description = "A", Amount = 1, Date = DateTime.Today, CategoryId = id, CreatedAt = DateTime.Today };
-            var expense2 = new Expense { Id = id, Description = "A", Amount = 1, Date = DateTime.Today, CategoryId = id, CreatedAt = DateTime.Today };
+            var money = new Money(amount: 1);
+            var expense1 = new Expense { Id = id, Description = "A", Money = money, Date = DateTime.Today, CategoryId = id, CreatedAt = DateTime.Today };
+            var expense2 = new Expense { Id = id, Description = "A", Money = money, Date = DateTime.Today, CategoryId = id, CreatedAt = DateTime.Today };
 
             //Assert
             Assert.That(expense1, Is.EqualTo(expense2));

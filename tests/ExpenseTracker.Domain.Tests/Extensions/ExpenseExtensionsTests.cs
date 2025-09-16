@@ -1,5 +1,6 @@
 ﻿using ExpenseTracker.Domain.Extensions;
 using ExpenseTracker.Domain.Models;
+using ExpenseTracker.Domain.ValueObjects;
 
 namespace ExpenseTracker.Domain.Tests.Extensions
 {
@@ -11,11 +12,13 @@ namespace ExpenseTracker.Domain.Tests.Extensions
         {
             // Arrange
             var id = Guid.NewGuid();
-            var expense = new Expense { Id = id, Description = "A", Amount = 1, Date = DateTime.Today, CategoryId = id, CreatedAt = DateTime.Today };
+            var money1 = new Money(amount: 1);
+            var money2 = new Money(amount: 2);
+            var expense = new Expense { Id = id, Description = "A", Money = money1, Date = DateTime.Today, CategoryId = id, CreatedAt = DateTime.Today };
 
             // Act
             var updatedId = Guid.NewGuid();
-            var result = expense.UpdateDetails(description: "B", amount: 2, date: DateTime.Today.AddMinutes(5), categoryId: updatedId);
+            var result = expense.UpdateDetails(description: "B", money: money2, date: DateTime.Today.AddMinutes(5), categoryId: updatedId);
 
             // Assert
             using (Assert.EnterMultipleScope())
@@ -24,7 +27,7 @@ namespace ExpenseTracker.Domain.Tests.Extensions
                 Assert.That(result.Errors, Is.Empty);
                 Assert.That(result.Value?.Id, Is.EqualTo(id));
                 Assert.That(result.Value?.Description, Is.EqualTo("B"));
-                Assert.That(result.Value?.Amount, Is.EqualTo(2));
+                Assert.That(result.Value?.Money.Amount, Is.EqualTo(2));
                 Assert.That(result.Value?.CategoryId, Is.EqualTo(updatedId));
             }
         }
@@ -34,11 +37,13 @@ namespace ExpenseTracker.Domain.Tests.Extensions
         {
             // Arrange
             var id = Guid.NewGuid();
-            var expense = new Expense { Id = id, Description = "A", Amount = 1, Date = DateTime.Today, CategoryId = id, CreatedAt = DateTime.Today };
+            var money1 = new Money(amount: 1);
+            var money2 = new Money(amount: 2);
+            var expense = new Expense { Id = id, Description = "A", Money = money1, Date = DateTime.Today, CategoryId = id, CreatedAt = DateTime.Today };
 
             // Act
             var updatedId = Guid.NewGuid();
-            var result = expense.UpdateDetails(description: string.Empty, amount: 2, date: DateTime.Today.AddMinutes(5), categoryId: updatedId);
+            var result = expense.UpdateDetails(description: string.Empty, money: money2, date: DateTime.Today.AddMinutes(5), categoryId: updatedId);
 
             // Assert
             using (Assert.EnterMultipleScope())
@@ -54,10 +59,11 @@ namespace ExpenseTracker.Domain.Tests.Extensions
         {
             // Arrange
             Expense expense = null!;
+            var money = new Money(amount: 2);
 
             // Act
             var updatedId = Guid.NewGuid();
-            var result = expense.UpdateDetails(description: string.Empty, amount: 2, date: DateTime.Today.AddMinutes(5), categoryId: updatedId);
+            var result = expense.UpdateDetails(description: string.Empty, money: money, date: DateTime.Today.AddMinutes(5), categoryId: updatedId);
 
             // Assert
             using (Assert.EnterMultipleScope())
@@ -73,11 +79,13 @@ namespace ExpenseTracker.Domain.Tests.Extensions
         {
             // Arrange
             var id = Guid.NewGuid();
-            var expense = new Expense { Id = id, Description = "A", Amount = 1, Date = DateTime.Today, CategoryId = id, CreatedAt = DateTime.Today };
+            var money1 = new Money(amount: 1);
+            var money2 = new Money(amount: 2);
+            var expense = new Expense { Id = id, Description = "A", Money = money1, Date = DateTime.Today, CategoryId = id, CreatedAt = DateTime.Today };
 
             // Act
             var updatedId = Guid.NewGuid();
-            var result = expense.UpdateDetails(description: "B", amount: 2, date: DateTime.Today.AddMinutes(5), categoryId: updatedId);
+            var result = expense.UpdateDetails(description: "B", money: money2, date: DateTime.Today.AddMinutes(5), categoryId: updatedId);
 
             // Assert
             using (Assert.EnterMultipleScope())
@@ -128,11 +136,12 @@ namespace ExpenseTracker.Domain.Tests.Extensions
             // Arrange
             var start = DateTime.Today;
             var end = start.AddDays(10);
+            var dateRange = new DateRange(start, end);
 
             var expense = new Expense { Date = DateTime.Today };
 
             // Act
-            var result = expense.IsInDateRange(start, end);
+            var result = expense.IsInDateRange(dateRange);
 
             // Assert
             Assert.That(result, Is.True);
@@ -144,11 +153,12 @@ namespace ExpenseTracker.Domain.Tests.Extensions
             // Arrange
             var start = DateTime.Today.AddDays(-5);
             var end = start.AddDays(4);
+            var dateRange = new DateRange(start, end);
 
             var expense = new Expense { Date = DateTime.Today };
 
             // Act
-            var result = expense.IsInDateRange(start, end);
+            var result = expense.IsInDateRange(dateRange);
 
             // Assert
             Assert.That(result, Is.False);

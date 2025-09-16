@@ -25,10 +25,10 @@ namespace ExpenseTracker.Domain.Validations
             else if (expense.Description.Trim().Length > MaxDescriptionLength)
                 errors.Add("Description length must be less than or equal to 200 characters.");
 
-            if (expense.Amount <= 0)
+            if (expense.Money.Amount <= 0)
                 errors.Add("Amount must be greater than 0.");
 
-            if (expense.Amount > MaxAmount)
+            if (expense.Money.Amount > MaxAmount)
                 errors.Add("Amount must be less than or equal to 100,000.");
 
             if (expense.Date == default)

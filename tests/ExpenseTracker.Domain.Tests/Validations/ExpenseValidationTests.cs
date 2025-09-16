@@ -1,5 +1,6 @@
 ﻿using ExpenseTracker.Domain.Models;
 using ExpenseTracker.Domain.Validations;
+using ExpenseTracker.Domain.ValueObjects;
 
 namespace ExpenseTracker.Domain.Tests.Validations
 {
@@ -18,11 +19,12 @@ namespace ExpenseTracker.Domain.Tests.Validations
         public void ExpenseValidation_Should_Return_Success_For_Valid_Expense()
         {
             // Arrange
+            var money = new Money(amount: 2);
             var expense = new Expense
             {
                 Id = Guid.NewGuid(),
                 Description = "Description",
-                Amount = 2m,
+                Money = money,
                 Date = DateTime.UtcNow,
                 CategoryId = Guid.NewGuid(),
                 CreatedAt = DateTime.UtcNow
@@ -58,11 +60,12 @@ namespace ExpenseTracker.Domain.Tests.Validations
         public void ExpenseValidation_Should_Return_Error_When_Id_Is_Default()
         {
             // Arrange
+            var money = new Money(amount: 2);
             var expense = new Expense
             {
                 Id = default,
                 Description = "Description",
-                Amount = 2m,
+                Money = money,
                 Date = DateTime.UtcNow,
                 CategoryId = Guid.NewGuid(),
                 CreatedAt = DateTime.UtcNow
@@ -84,11 +87,12 @@ namespace ExpenseTracker.Domain.Tests.Validations
         public void ExpenseValidation_Should_Return_Error_When_Description_Is_Empty()
         {
             // Arrange
+            var money = new Money(amount: 2);
             var expense = new Expense
             {
                 Id = Guid.NewGuid(),
                 Description = string.Empty,
-                Amount = 2m,
+                Money = money,
                 Date = DateTime.UtcNow,
                 CategoryId = Guid.NewGuid(),
                 CreatedAt = DateTime.UtcNow
@@ -110,11 +114,12 @@ namespace ExpenseTracker.Domain.Tests.Validations
         public void ExpenseValidation_Should_Return_Error_When_Description_Exceeds_Max_Length()
         {
             // Arrange
+            var money = new Money(amount: 2);
             var expense = new Expense
             {
                 Id = Guid.NewGuid(),
                 Description = new string('A', 201),
-                Amount = 2m,
+                Money = money,
                 Date = DateTime.UtcNow,
                 CategoryId = Guid.NewGuid(),
                 CreatedAt = DateTime.UtcNow
@@ -132,16 +137,16 @@ namespace ExpenseTracker.Domain.Tests.Validations
             }
         }
 
-        [TestCase(0)]
-        [TestCase(-1)]
-        public void ExpenseValidation_Should_Return_Error_When_Amount_Is_Zero_Or_Negative(decimal amount)
+        [Test]
+        public void ExpenseValidation_Should_Return_Error_When_Amount_Is_Zero()
         {
             // Arrange
+            var money = new Money(amount: 0);
             var expense = new Expense
             {
                 Id = Guid.NewGuid(),
                 Description = "Description",
-                Amount = amount,
+                Money = money,
                 Date = DateTime.UtcNow,
                 CategoryId = Guid.NewGuid(),
                 CreatedAt = DateTime.UtcNow
@@ -163,11 +168,12 @@ namespace ExpenseTracker.Domain.Tests.Validations
         public void ExpenseValidation_Should_Return_Error_When_Amount_Exceeds_Max()
         {
             // Arrange
+            var money = new Money(amount: 100001);
             var expense = new Expense
             {
                 Id = Guid.NewGuid(),
                 Description = "Description",
-                Amount = 100001m,
+                Money = money,
                 Date = DateTime.UtcNow,
                 CategoryId = Guid.NewGuid(),
                 CreatedAt = DateTime.UtcNow
@@ -189,11 +195,12 @@ namespace ExpenseTracker.Domain.Tests.Validations
         public void ExpenseValidation_Should_Return_Error_When_Date_Is_Default()
         {
             // Arrange
+            var money = new Money(amount: 2);
             var expense = new Expense
             {
                 Id = Guid.NewGuid(),
                 Description = "Description",
-                Amount = 1m,
+                Money = money,
                 Date = default,
                 CategoryId = Guid.NewGuid(),
                 CreatedAt = DateTime.UtcNow
@@ -215,11 +222,12 @@ namespace ExpenseTracker.Domain.Tests.Validations
         public void ExpenseValidation_Should_Return_Error_When_Date_Is_In_The_Future()
         {
             // Arrange
+            var money = new Money(amount: 2);
             var expense = new Expense
             {
                 Id = Guid.NewGuid(),
                 Description = "Description",
-                Amount = 1m,
+                Money = money,
                 Date = new DateTime(2026, 1, 1),
                 CategoryId = Guid.NewGuid(),
                 CreatedAt = DateTime.UtcNow
@@ -241,11 +249,12 @@ namespace ExpenseTracker.Domain.Tests.Validations
         public void ExpenseValidation_Should_Return_Error_When_Date_Is_Before_MinYear()
         {
             // Arrange
+            var money = new Money(amount: 2);
             var expense = new Expense
             {
                 Id = Guid.NewGuid(),
                 Description = "Description",
-                Amount = 1m,
+                Money = money,
                 Date = new DateTime(1999, 1, 1),
                 CategoryId = Guid.NewGuid(),
                 CreatedAt = DateTime.UtcNow
@@ -267,11 +276,12 @@ namespace ExpenseTracker.Domain.Tests.Validations
         public void ExpenseValidation_Should_Return_Error_When_CategoryId_Is_Default()
         {
             // Arrange
+            var money = new Money(amount: 2);
             var expense = new Expense
             {
                 Id = Guid.NewGuid(),
                 Description = "Description",
-                Amount = 1m,
+                Money = money,
                 Date = DateTime.UtcNow,
                 CategoryId = default,
                 CreatedAt = DateTime.UtcNow
@@ -293,11 +303,12 @@ namespace ExpenseTracker.Domain.Tests.Validations
         public void ExpenseValidation_Should_Return_Error_When_CreatedAt_Is_Default()
         {
             // Arrange
+            var money = new Money(amount: 2);
             var expense = new Expense
             {
                 Id = Guid.NewGuid(),
                 Description = "Description",
-                Amount = 1m,
+                Money = money,
                 Date = DateTime.UtcNow,
                 CategoryId = Guid.NewGuid(),
                 CreatedAt = default
@@ -319,11 +330,12 @@ namespace ExpenseTracker.Domain.Tests.Validations
         public void ExpenseValidation_Should_Return_Error_When_CreatedAt_Is_In_The_Future()
         {
             // Arrange
+            var money = new Money(amount: 2);
             var expense = new Expense
             {
                 Id = Guid.NewGuid(),
                 Description = "Description",
-                Amount = 1m,
+                Money = money,
                 Date = DateTime.UtcNow,
                 CategoryId = Guid.NewGuid(),
                 CreatedAt = DateTime.UtcNow.AddMinutes(1)
@@ -345,11 +357,12 @@ namespace ExpenseTracker.Domain.Tests.Validations
         public void ExpenseValidation_Should_Return_Multiple_Errors_For_Multiple_Invalid_Fields()
         {
             // Arrange
+            var money = new Money(amount: 0);
             var expense = new Expense
             {
                 Id = default,
                 Description = string.Empty,
-                Amount = -10m,
+                Money = money,
                 Date = default,
                 CategoryId = default,
                 CreatedAt = default
