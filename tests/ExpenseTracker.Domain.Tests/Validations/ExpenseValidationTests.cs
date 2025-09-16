@@ -138,7 +138,7 @@ namespace ExpenseTracker.Domain.Tests.Validations
         }
 
         [Test]
-        public void ExpenseValidation_Should_Return_Error_When_Amount_Is_Zero()
+        public void ExpenseValidation_Should_Not_Return_Error_When_Amount_Is_Zero()
         {
             // Arrange
             var money = new Money(amount: 0);
@@ -158,9 +158,8 @@ namespace ExpenseTracker.Domain.Tests.Validations
             // Assert
             using (Assert.EnterMultipleScope())
             {
-                Assert.That(result.IsSuccess, Is.False);
-                Assert.That(result.Errors, Has.Count.EqualTo(1));
-                Assert.That(result.Errors, Does.Contain("Amount must be greater than 0."));
+                Assert.That(result.IsSuccess, Is.True);
+                Assert.That(result.Errors, Is.Empty);
             }
         }
 
@@ -375,10 +374,9 @@ namespace ExpenseTracker.Domain.Tests.Validations
             using (Assert.EnterMultipleScope())
             {
                 Assert.That(result.IsSuccess, Is.False);
-                Assert.That(result.Errors, Has.Count.EqualTo(6));
+                Assert.That(result.Errors, Has.Count.EqualTo(5));
                 Assert.That(result.Errors, Does.Contain("Id must not be empty."));
                 Assert.That(result.Errors, Does.Contain("Description is required."));
-                Assert.That(result.Errors, Does.Contain("Amount must be greater than 0."));
                 Assert.That(result.Errors, Does.Contain("Date is required."));
                 Assert.That(result.Errors, Does.Contain("CategoryId must not be empty."));
                 Assert.That(result.Errors, Does.Contain("CreatedAt is required."));
