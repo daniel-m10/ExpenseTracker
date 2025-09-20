@@ -27,7 +27,7 @@ namespace ExpenseTracker.Infrastructure.Config
             var localConfig = TryLoadLocalConfiguration();
             if (localConfig.HasValue)
             {
-                _logger.Information("Loaded DB config from local configuration");
+                _logger.Information("Loaded DB config from local configuration.");
                 return localConfig.Value;
             }
 
@@ -86,8 +86,8 @@ namespace ExpenseTracker.Infrastructure.Config
             var secretName = _configuration[AwsSecretNameKey];
             if (string.IsNullOrWhiteSpace(secretName))
             {
-                _logger.Error("AWS:SecretName is not configured.");
-                throw new InvalidOperationException("AWS:SecretName is not configured.");
+                _logger.Error("Aws:SecretName is not configured.");
+                throw new InvalidOperationException("Aws:SecretName is not configured.");
             }
             return secretName;
         }
