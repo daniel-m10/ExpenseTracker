@@ -1,13 +1,13 @@
 ﻿using Amazon.SecretsManager;
 using Amazon.SecretsManager.Model;
-using ExpenseTracker.Infrastructure.Abstractions;
+using ExpenseTracker.Infrastructure.Config.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using System.Text.Json;
 
 namespace ExpenseTracker.Infrastructure.Config
 {
-    public class CompositeConfigLoader(IConfiguration configuration, ILogger logger, IAmazonSecretsManager secretsManager) : IDbConfig
+    public class CompositeConfigLoader(IConfiguration configuration, ILogger logger, IAmazonSecretsManager secretsManager) : ICompositeConfigLoader
     {
         private readonly IConfiguration _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         private readonly ILogger _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -74,9 +74,14 @@ namespace ExpenseTracker.Infrastructure.Config
                 _logger.Error("Failed to parse AWS secret JSON: {Error}", ex.Message);
                 throw;
             }
+            catch (AmazonSecretsManagerException ex)
+            {
+                _logger.Error("AWS Secrets Manager error: {Error}", ex.Message);
+                throw new InvalidOperationException("Failed to retrieve database configuration from AWS", ex);
+            }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                _logger.Error("Unexpected error loading configuration: {Error}", ex.Message);
                 throw;
             }
         }

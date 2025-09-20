@@ -1,4 +1,5 @@
-﻿using ExpenseTracker.Infrastructure.Data;
+﻿using ExpenseTracker.Infrastructure.Config;
+using ExpenseTracker.Infrastructure.Data;
 using ExpenseTracker.Infrastructure.Data.Providers.Interfaces;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -36,8 +37,14 @@ namespace ExpenseTracker.Infrastructure.Tests.Data
 
             var factory = new DbConnectionFactory(_strategies, _logger);
 
+            var dbConfig = new DatabaseConfiguration()
+            {
+                Provider = "postgres",
+                ConnectionString = "fake-conn"
+            };
+
             // Act
-            var result = await factory.CreateAndOpenConnectionAsync("postgres", "fake-conn", CancellationToken.None);
+            var result = await factory.CreateAndOpenConnectionAsync(dbConfig, CancellationToken.None);
 
             // Assert
             using (Assert.EnterMultipleScope())
@@ -53,10 +60,15 @@ namespace ExpenseTracker.Infrastructure.Tests.Data
             // Arrange
             var factory = new DbConnectionFactory(_strategies, _logger);
 
+            var dbConfig = new DatabaseConfiguration()
+            {
+                ConnectionString = "conn"
+            };
+
             // Act & Assert
             var ex = Assert.ThrowsAsync<ArgumentException>(() =>
-                factory.CreateAndOpenConnectionAsync(string.Empty, "conn", CancellationToken.None));
-            Assert.That(ex.ParamName, Is.EqualTo("provider"));
+                factory.CreateAndOpenConnectionAsync(dbConfig, CancellationToken.None));
+            Assert.That(ex.ParamName, Is.EqualTo("dbConfig"));
         }
 
         [Test]
@@ -65,10 +77,16 @@ namespace ExpenseTracker.Infrastructure.Tests.Data
             // Arrange
             var factory = new DbConnectionFactory(_strategies, _logger);
 
+            var dbConfig = new DatabaseConfiguration()
+            {
+                Provider = null!,
+                ConnectionString = "conn"
+            };
+
             // Act & Assert
             var ex = Assert.ThrowsAsync<ArgumentException>(() =>
-                factory.CreateAndOpenConnectionAsync(null!, "conn", CancellationToken.None));
-            Assert.That(ex.ParamName, Is.EqualTo("provider"));
+                factory.CreateAndOpenConnectionAsync(dbConfig, CancellationToken.None));
+            Assert.That(ex.ParamName, Is.EqualTo("dbConfig"));
         }
 
         [Test]
@@ -77,8 +95,14 @@ namespace ExpenseTracker.Infrastructure.Tests.Data
             // Arrange
             var factory = new DbConnectionFactory(_strategies, _logger);
 
+            var dbConfig = new DatabaseConfiguration()
+            {
+                Provider = "oracle",
+                ConnectionString = "conn"
+            };
+
             // Act & Assert
-            Assert.ThrowsAsync<NotSupportedException>(() => factory.CreateAndOpenConnectionAsync("oracle", "conn", CancellationToken.None));
+            Assert.ThrowsAsync<NotSupportedException>(() => factory.CreateAndOpenConnectionAsync(dbConfig, CancellationToken.None));
         }
 
         [Test]
@@ -89,11 +113,17 @@ namespace ExpenseTracker.Infrastructure.Tests.Data
             strategy.CreateConnection(Arg.Any<string>()).Throws(new InvalidOperationException("fail"));
             _strategies["mysql"] = strategy;
 
+            var dbConfig = new DatabaseConfiguration()
+            {
+                Provider = "mysql",
+                ConnectionString = "conn"
+            };
+
             // Act & Assert
             var factory = new DbConnectionFactory(_strategies, _logger);
 
             Assert.ThrowsAsync<InvalidOperationException>(() =>
-                factory.CreateAndOpenConnectionAsync("mysql", "conn", CancellationToken.None));
+                factory.CreateAndOpenConnectionAsync(dbConfig, CancellationToken.None));
         }
 
         [Test]
@@ -107,11 +137,17 @@ namespace ExpenseTracker.Infrastructure.Tests.Data
             strategy.CreateConnection(Arg.Any<string>()).Returns(fakeConnection);
             _strategies["postgres"] = strategy;
 
+            var dbConfig = new DatabaseConfiguration()
+            {
+                Provider = "postgres",
+                ConnectionString = "conn"
+            };
+
             // Act & Assert
             var factory = new DbConnectionFactory(_strategies, _logger);
 
             Assert.ThrowsAsync<OperationCanceledException>(() =>
-                factory.CreateAndOpenConnectionAsync("postgres", "conn", new CancellationToken(true)));
+                factory.CreateAndOpenConnectionAsync(dbConfig, new CancellationToken(true)));
         }
     }
 }

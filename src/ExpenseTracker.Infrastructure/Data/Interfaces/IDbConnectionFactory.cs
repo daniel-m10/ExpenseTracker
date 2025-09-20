@@ -1,9 +1,10 @@
-﻿using System.Data;
+﻿using ExpenseTracker.Infrastructure.Config;
+using System.Data;
 
 namespace ExpenseTracker.Infrastructure.Data.Interfaces
 {
     public interface IDbConnectionFactory
     {
-        Task<IDbConnection> CreateAndOpenConnectionAsync(string provider, string connectionString, CancellationToken ct);
+        Task<IDbConnection> CreateAndOpenConnectionAsync(DatabaseConfiguration dbConfig, CancellationToken ct);
     }
 }
