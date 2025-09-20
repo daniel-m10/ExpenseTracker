@@ -403,7 +403,7 @@ namespace ExpenseTracker.Infrastructure.Tests.Config
         }
 
         [Test]
-        public void LoadAsync_LogsError_WhenAwsCallFails()
+        public async Task LoadAsync_LogsError_WhenAwsCallFails()
         {
             // Arrange   
             var configuration = new ConfigurationBuilder()
@@ -425,7 +425,7 @@ namespace ExpenseTracker.Infrastructure.Tests.Config
 
             try
             {
-                var (Provider, ConnectionString) = configLoader.LoadAsync().GetAwaiter().GetResult();
+                var (Provider, ConnectionString) = await configLoader.LoadAsync();
             }
             catch (Exception)
             {
@@ -433,7 +433,9 @@ namespace ExpenseTracker.Infrastructure.Tests.Config
             }
 
             // Assert
-            _logger.Received(1).Error(Arg.Is<string>(s => s.Contains("AWS call failed")));
+            _logger.Received(1).Error("Unexpected error loading configuration: {Error}",
+                Arg.Is<string>(s => s.Contains("AWS call failed"))
+  );
         }
     }
 }
